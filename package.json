@@ -4,9 +4,12 @@
   "description": "A content management web app",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index",
-    "start-dev": "nodemon server/index",
-    "test": "mocha server/test/**/*.js",
+    "build": "babel -d ./build ./server -s",
+    "clean": "rm -rf build",
+    "prestart": "npm run clean && npm run build",
+    "start": "node build/index",
+    "start-dev": "nodemon --exec babel-node ./server/index.js",
+    "test": "mocha server/test/**/*.js --require @babel/register",
     "lint": "eslint --fix server/**/*.js"
   },
   "author": "Uthdev",
@@ -15,6 +18,11 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/register": "^7.7.4",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "eslint": "^6.7.2",
