@@ -9,7 +9,8 @@
     "prestart": "npm run clean && npm run build",
     "start": "node build/index",
     "start-dev": "nodemon --exec babel-node ./server/index.js",
-    "test": "mocha server/test/**/*.js --require @babel/register",
+    "test": "nyc --reporter=html --reporter=text mocha server/test/**/*.js --timeout 10000 --require @babel/register --recursive --exit",
+    "coverage": "nyc report --reporter=text-lcov --reporter=lcov",
     "lint": "eslint --fix server/**/*.js"
   },
   "author": "Uthdev",
@@ -28,6 +29,7 @@
     "eslint": "^6.7.2",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "mocha": "^6.2.2"
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1"
   }
 }
