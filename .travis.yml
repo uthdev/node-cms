@@ -5,7 +5,7 @@ notifications:
   email: false
 env:
   global:
-  - CC_TEST_REPORTER_ID=6e88909a884f0304d049dbe9e4d7261af2ae104c540510edf967a75f96f453bc
+  - CC_TEST_REPORTER_ID=14ac9a5b641b968d56f40cba8e72c0344a574c4384c3b58e1924254532f1869e
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
