@@ -1,8 +1,10 @@
 import { Router } from 'express';
-import ProductController from '../controllers/adminController'
+import ProductController from '../controllers/adminController';
 
 const adminRoutes = Router();
-const { getAddProduct, postAddProduct, getEditProduct, postEditProduct, getProducts, postDeleteProduct } = ProductController;
+const {
+  getAddProduct, postAddProduct, getEditProduct, postEditProduct, getProducts, postDeleteProduct
+} = ProductController;
 
 adminRoutes.get('/add-product', getAddProduct);
 
