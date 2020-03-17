@@ -7,4 +7,3 @@ describe('Dummy Test', () => {
     expect(true).to.equal(true);
   });
 });
-
