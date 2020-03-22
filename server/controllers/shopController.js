@@ -9,7 +9,8 @@ class ProductController {
       return res.render('shop/product-list', {
         pageTitle: 'All Products',
         products,
-        path: '/products'
+        path: '/products',
+        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -27,7 +28,8 @@ class ProductController {
       return res.render('shop/product-detail', {
         pageTitle: product.title,
         product,
-        path: '/products'
+        path: '/products',
+        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -40,21 +42,14 @@ class ProductController {
       return res.render('shop/index', {
         pageTitle: 'Shop',
         products,
-        path: '/'
+        path: '/',
+        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
     }
   }
   
-
-  static async getCheckout(req, res) {
-    res.render('shop/checkout', {
-      path: '/checkout',
-      pageTitle: 'Checkout'
-    });
-  }
-
   static async postCart(req, res, next) {
     const { body: { productId }, user } = req;
     try {
@@ -85,7 +80,8 @@ class ProductController {
       return res.render('shop/cart', {
         products: items,
         path: '/cart',
-        pageTitle: 'Your Cart'
+        pageTitle: 'Your Cart',
+        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -120,7 +116,8 @@ class ProductController {
       return res.render('shop/orders', {
         path: '/orders',
         pageTitle: 'Your Orders',
-        orders
+        orders,
+        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);

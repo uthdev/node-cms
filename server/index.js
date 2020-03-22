@@ -1,13 +1,23 @@
 import path from 'path';
 import express from 'express';
+import dotenv from 'dotenv'
 import mongoose from 'mongoose';
+import session from 'express-session';
+import connectMongoSession from 'connect-mongodb-session';
 // import expressHbs from 'express-handlebars';
 import adminRoutes from './routes/admin';
 import shopRoutes from './routes/shop';
+import authRoutes from './routes/auth';
 import get404 from './controllers/errorController';
 import User from './models/User';
 
 const app = express();
+dotenv.config();
+const MongoDBStore = connectMongoSession(session);
+const store = new MongoDBStore({
+  uri: process.env.MONGODB_URI,
+  collection: 'sessions'
+})
 
 app.set('view engine', 'ejs');
 // app.engine('hbs', expressHbs({
@@ -18,23 +28,33 @@ app.set('view engine', 'ejs');
 // app.set('views', 'views');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(session({ 
+  secret: 'Just another', 
+  resave: false, 
+  saveUninitialized: false,
+  store: store
+}))
 const PORT = process.env.PORT || 3000;
 
 app.use(async (req, res, next) => {
   try {
-    const user = await User.findById('5e7088283be41b0e584a1121');
+    if (!req.session.user) {
+      return next();
+    }
+    const user = await User.findById(req.session.user._id);
     req.user = user;
-    next();
+    return next();
   } catch (error) {
     return next(error);
   }
 });
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 app.use('/*', get404);
 
 app.listen(PORT, async () => {
-  const result = await mongoose.connect('mongodb+srv://uthdev_92:2VTSlV3uHROn2Bnu@cluster0-aqv1h.mongodb.net/development?retryWrites=true&w=majority', {
+  const result = await mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
   });

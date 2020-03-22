@@ -2,10 +2,11 @@ import Product from '../models/Product';
 
 class AdminController {
   static async getAddProduct(req, res) {
-    res.render('admin/edit-product', {
+    return res.render('admin/edit-product', {
       pageTitle: 'Add Product',
       path: '/admin/add-product',
-      editing: false
+      editing: false,
+      isAuthenticated: req.session.isLoggedIn
     });
   }
 
@@ -14,7 +15,7 @@ class AdminController {
     const { user: userId } = req;
     try {
       const {
-        title, imageUrl, price, description
+        title, imageUrl, price, description, 
       } = req.body;
       const product = new Product({
         title, description, price, imageUrl, userId
@@ -41,7 +42,8 @@ class AdminController {
         pageTitle: 'Edit Product',
         path: '/admin/edit-product',
         editing: edit,
-        product
+        product,
+        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -76,6 +78,7 @@ class AdminController {
         pageTitle: 'Admin Products',
         products,
         path: '/admin/products',
+        isAuthenticated: req.session.isloggedIn
       });
     } catch (error) {
       return next(error);
