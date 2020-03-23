@@ -9,8 +9,7 @@ class ProductController {
       return res.render('shop/product-list', {
         pageTitle: 'All Products',
         products,
-        path: '/products',
-        isAuthenticated: req.session.isLoggedIn
+        path: '/products'
       });
     } catch (error) {
       return next(error);
@@ -29,7 +28,6 @@ class ProductController {
         pageTitle: product.title,
         product,
         path: '/products',
-        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -43,7 +41,6 @@ class ProductController {
         pageTitle: 'Shop',
         products,
         path: '/',
-        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -81,7 +78,6 @@ class ProductController {
         products: items,
         path: '/cart',
         pageTitle: 'Your Cart',
-        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -97,7 +93,7 @@ class ProductController {
       const order = new Order({
         products,
         user: {
-          name: user.name,
+          email: user.email,
           userId: user
         }
       });
@@ -117,7 +113,6 @@ class ProductController {
         path: '/orders',
         pageTitle: 'Your Orders',
         orders,
-        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
