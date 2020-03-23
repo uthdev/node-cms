@@ -6,7 +6,6 @@ class AdminController {
       pageTitle: 'Add Product',
       path: '/admin/add-product',
       editing: false,
-      isAuthenticated: req.session.isLoggedIn
     });
   }
 
@@ -43,7 +42,6 @@ class AdminController {
         path: '/admin/edit-product',
         editing: edit,
         product,
-        isAuthenticated: req.session.isLoggedIn
       });
     } catch (error) {
       return next(error);
@@ -78,7 +76,6 @@ class AdminController {
         pageTitle: 'Admin Products',
         products,
         path: '/admin/products',
-        isAuthenticated: req.session.isloggedIn
       });
     } catch (error) {
       return next(error);
