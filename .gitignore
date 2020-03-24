@@ -2,6 +2,7 @@ node_modules/
 build/
 .nyc_output/
 coverage/
+.env
 views/layouts
 views/add-product.hbs
 views/add-product.pug

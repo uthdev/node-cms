@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
+import sgMail from '@sendgrid/mail';
 import User from '../models/User';
+
+
 class AuthControllers {
-  
   static async getLogin(req, res) {
     // console.log(req.get('Cookie'));
     // const isloggedIn = req.get('Cookie').split(';')[2].trim().split('=')[1];
@@ -47,6 +49,8 @@ class AuthControllers {
 
   static async postSignup(req, res, next) {
     const { email, password, confirmPassword} = req.body;
+    console.log(process.env.SENDGRID_API_KEY);
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     try {
       const userExists = await User.findOne({email});
       if (userExists) {
@@ -60,7 +64,14 @@ class AuthControllers {
         cart: { items: [] }
       });
       await user.save();
-      return res.redirect('/login');
+      res.redirect('/login');
+      const msg = {
+        to: email,
+        from: 'Shop@node-cms.com',
+        subject: 'Signup Succeeded!',
+        html: '<p>You successfully signed up!</p>'
+      }
+      return sgMail.send(msg); 
     } catch (error) {
       return res.redirect('/signup');
     }
