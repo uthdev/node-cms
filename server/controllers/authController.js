@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import bcrypt from 'bcryptjs';
 import sgMail from '@sendgrid/mail';
 import User from '../models/User';
@@ -84,6 +86,85 @@ class AuthControllers {
     } catch (error) {
       console.log(error);
       return res.redirect('/');
+    }
+  }
+
+  static async  getForgot(req, res, next) {
+    return res.render('auth/forgot', {
+      pageTitle: 'Forgot Password',
+      path: '/forgotpassword',
+      errorMessage: req.flash('error')[0] || null, 
+    });
+  }
+
+  static async postForgot(req, res, next) {
+    const { email } = req.body;
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    try {
+      const buffer = crypto.randomBytes(32);
+      const token = buffer.toString('hex');
+      console.log(token);
+      const user = await User.findOne({ email });
+      console.log(user);
+      if (!user) {
+        req.flash('error', 'No Account with that email found.');
+        return res.redirect('/forgotpassword');
+      }
+      user.resetToken = token;
+      user.resetTokenExpiration = Date.now() + 3600000;
+      await user.save();
+      res.redirect('/');
+      const msg = {
+        to: email,
+        from: 'Shop@node-cms.com',
+        subject: 'Password Reset',
+        html: `
+        <p>You requested a password reset.</p>
+        <p>Click this <a href="http://localhost:3000/resetpassword/${token}">link</a> to set a new password</p>
+        `
+      }
+      return sgMail.send(msg); 
+    } catch (error) {
+      console.log(error);
+      return res.redirect('/forgotpassword')
+    }
+  }
+
+  static async getReset (req, res, next) {
+    const { token } = req.params;
+    try {
+      const user = await User.findOne({ resetToken: token, resetTokenExpiration: { $gt:  Date.now()} });
+      return res.render('auth/reset', {
+        pageTitle: 'Reset Password',
+        path: '/resetpassword',
+        userId: user._id.toString(),
+        passwordToken: token,
+        errorMessage: req.flash('error')[0] || null, 
+      });
+    } catch (error) {
+      console.log(error);
+      return res.redirect('/forgotpassword');
+    }
+  }
+
+  static async postReset (req, res, next) {
+    const { password, userId, passwordToken } = req.body;
+    try {
+      const user = await User.findOne({
+        resetToken: passwordToken, 
+        resetTokenExpiration: { $gt: Date.now() }, 
+        _id: userId 
+      });
+      const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(12));
+      user.password = hashedPassword;
+      user.resetToken = undefined;
+      user.resetTokenExpiration = undefined;
+      await user.save();
+      return res.redirect('/login')
+    } catch (error) {
+      console.log(error);
+      return res.redirect('/resetpassword');
     }
   }
 }

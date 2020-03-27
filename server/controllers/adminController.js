@@ -54,6 +54,9 @@ class AdminController {
     } = req.body;
     try {
       const product = await Product.findById(productId);
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect('/')
+      }
       product.title = title;
       product.description = description;
       product.price = price;
@@ -68,7 +71,7 @@ class AdminController {
 
   static async getProducts(req, res, next) {
     try {
-      const products = await Product.find();
+      const products = await Product.find({ userId: req.user._id });
       // .select('title price -_id')
       // .populate('userId', 'name');
       console.log(products);
@@ -85,7 +88,7 @@ class AdminController {
   static async postDeleteProduct(req, res, next) {
     const { productId } = req.body;
     try {
-      await Product.findByIdAndRemove(productId);
+      await Product.deleteOne({ _id: productId, userId: req.user._id});
       console.log('Destroyed Product');
       return res.redirect('/admin/products');
     } catch (error) {
